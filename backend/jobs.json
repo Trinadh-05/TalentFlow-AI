@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "title": "AWS Cloud Engineer",
+    "location": "Hyderabad",
+    "skills": ["AWS", "Linux", "Python"]
+  },
+  {
+    "id": 2,
+    "title": "Python Developer",
+    "location": "Bangalore",
+    "skills": ["Python", "Flask", "SQL"]
+  }
+]

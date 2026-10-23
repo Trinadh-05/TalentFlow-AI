@@ -1,0 +1,286 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TalentFlow AI</title>
+</head>
+
+<body>
+
+    <h1>TalentFlow AI</h1>
+
+    <h2>Available Jobs</h2>
+
+    <div id="jobs">
+        Loading jobs...
+    </div>
+
+    <hr>
+
+    <!-- Application Form -->
+    <div id="applicationForm" style="display: none;">
+
+        <h2>Apply for Job</h2>
+
+        <form id="applyForm">
+
+            <!-- Selected Job ID -->
+            <input type="hidden" id="jobId">
+
+            <!-- Name -->
+            <label>Name:</label><br>
+            <input type="text" id="name" required>
+            <br><br>
+
+            <!-- Email -->
+            <label>Email:</label><br>
+            <input type="email" id="email" required>
+            <br><br>
+
+            <!-- Phone -->
+            <label>Phone:</label><br>
+            <input type="tel" id="phone" required>
+            <br><br>
+
+            <!-- Resume -->
+            <label>Resume:</label><br>
+            <input
+                type="file"
+                id="resume"
+                accept=".pdf,.doc,.docx"
+                required
+            >
+            <br><br>
+
+            <!-- Submit -->
+            <button type="submit">
+                Submit Application
+            </button>
+
+        </form>
+
+        <p id="result"></p>
+
+    </div>
+
+
+    <script>
+
+        // ==========================================
+        // LOAD JOBS FROM BACKEND
+        // ==========================================
+
+        fetch("http://127.0.0.1:5000/jobs")
+
+            .then(response => response.json())
+
+            .then(jobs => {
+
+                const jobsContainer =
+                    document.getElementById("jobs");
+
+                jobsContainer.innerHTML = "";
+
+                jobs.forEach(job => {
+
+                    const jobCard =
+                        document.createElement("div");
+
+                    jobCard.innerHTML = `
+
+                        <h3>${job.title}</h3>
+
+                        <p>
+                            <strong>Location:</strong>
+                            ${job.location}
+                        </p>
+
+                        <p>
+                            <strong>Skills:</strong>
+                            ${job.skills.join(", ")}
+                        </p>
+
+                        <button
+                            onclick="showApplicationForm(
+                                ${job.id},
+                                '${job.title}'
+                            )">
+                            Apply Now
+                        </button>
+
+                        <hr>
+
+                    `;
+
+                    jobsContainer.appendChild(jobCard);
+
+                });
+
+            })
+
+            .catch(error => {
+
+                document.getElementById("jobs").innerHTML =
+                    "Unable to load jobs.";
+
+                console.error(error);
+
+            });
+
+
+        // ==========================================
+        // SHOW APPLICATION FORM
+        // ==========================================
+
+        function showApplicationForm(jobId, jobTitle) {
+
+            document.getElementById(
+                "applicationForm"
+            ).style.display = "block";
+
+
+            document.getElementById(
+                "jobId"
+            ).value = jobId;
+
+
+            document.querySelector(
+                "#applicationForm h2"
+            ).innerText =
+                "Apply for " + jobTitle;
+
+
+            window.scrollTo(
+                0,
+                document.body.scrollHeight
+            );
+
+        }
+
+
+        // ==========================================
+        // SUBMIT APPLICATION + RESUME
+        // ==========================================
+
+        document.getElementById(
+            "applyForm"
+        ).addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                // Create FormData object
+                const formData = new FormData();
+
+
+                // Add Name
+                formData.append(
+                    "name",
+                    document.getElementById(
+                        "name"
+                    ).value
+                );
+
+
+                // Add Email
+                formData.append(
+                    "email",
+                    document.getElementById(
+                        "email"
+                    ).value
+                );
+
+
+                // Add Phone
+                formData.append(
+                    "phone",
+                    document.getElementById(
+                        "phone"
+                    ).value
+                );
+
+
+                // Add Job ID
+                formData.append(
+                    "job_id",
+                    document.getElementById(
+                        "jobId"
+                    ).value
+                );
+
+
+                // Add Resume File
+                formData.append(
+                    "resume",
+                    document.getElementById(
+                        "resume"
+                    ).files[0]
+                );
+
+
+                // Send application to Flask backend
+                fetch(
+                    "http://127.0.0.1:5000/apply",
+                    {
+
+                        method: "POST",
+
+                        body: formData
+
+                    }
+                )
+
+                .then(
+                    response =>
+                        response.json()
+                )
+
+                .then(data => {
+
+                    document.getElementById(
+                        "result"
+                    ).innerText =
+                        data.message;
+
+
+                    // Clear form after successful submission
+                    if (
+                        data.message.includes(
+                            "successfully"
+                        )
+                    ) {
+
+                        document.getElementById(
+                            "applyForm"
+                        ).reset();
+
+                    }
+
+                })
+
+                .catch(error => {
+
+                    document.getElementById(
+                        "result"
+                    ).innerText =
+                        "Application submission failed.";
+
+                    console.error(error);
+
+                });
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
+```

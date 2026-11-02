@@ -31,6 +31,62 @@ The project demonstrates how AWS services can automate the initial stage of resu
 8. The screening result is stored in DynamoDB.
 9. CloudWatch logs are used to monitor execution and troubleshoot issues.
 
+
+Step 1: The user uploads a resume
+
+The user selects a PDF file through the TalentFlow-AI application.
+
+Step 2: The resume is stored in S3
+
+The application uploads the PDF to the configured S3 bucket.
+
+Bucket: talentflow-ai-resumes-2026
+
+Step 3: S3 triggers Lambda
+
+The configured S3 event notification triggers the Lambda processing workflow.
+
+Lambda starts executing the relevant Python code.
+
+Step 4: Lambda retrieves the PDF
+
+Lambda accesses the uploaded document from S3 using the permissions configured for its execution role.
+
+Step 5: The application extracts the text
+
+The pypdf library reads the PDF and extracts its text.
+
+Step 6: The application detects skills
+
+The extracted text is checked against the predefined technical-skill list.
+
+For the documented test, seven skills were detected.
+
+Step 7: The application calculates a score
+
+The system calculates the percentage-based skill-match score.
+
+The documented result was 50.0%.
+
+Step 8: The application classifies the candidate
+
+The system applies its configured screening rule.
+
+The documented classification was SHORTLISTED.
+
+Step 9: The result is stored
+
+The screening information is saved in DynamoDB.
+
+Step 10: The execution is monitored
+
+CloudWatch records Lambda execution logs, allowing you to verify processing and investigate errors.
+
+Step 11: The result is reviewed
+
+The screening result can be reviewed by the user or recruiter.
+
+
 ## Project Status
 
 This project is an internship prototype demonstrating an AWS-based serverless resume-screening workflow.
